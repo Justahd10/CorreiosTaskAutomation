@@ -1,84 +1,117 @@
 import time
 import pyautogui as auto
+from pyautogui import ImageNotFoundException
+
+auto.PAUSE = 0.5
+
 from auto_functions import (
     click_on_img, copy_text_content,
-    get_images_coordinates, put_trigger
+    get_images_coordinates
 )
 
 phone_field_coordinates = None
 
 def copy_customer_email(tracking_code):
+    """Searches for the customer in Bling and copies the contact data.
+
+    Args:
+        tracking_code: Tracking code used in the customer search.
+
+    Returns:
+        True when the search finds valid data; False when there is no result
+        or the shipment is canceled.
+    """
     global phone_field_coordinates
 
-    print(f"Iniciando processo para o código de rastreio {tracking_code}.")
+    def search_customer_datas():
+        nonlocal tracking_code
 
-    # 1. Access invoices manager web page
-    click_on_img("screenshots/bling_nome_aba.png")
-    time.sleep(0.5)
+        click_on_img("screenshots/bling_nome_aba.png")
 
-    # 2. Access trakcing code filtering fild
-    click_on_img("screenshots/bling_campo_codigo_rastreio.png")
+        click_on_img("screenshots/bling_campo_codigo_rastreio.png")
 
-    # 3. Type Correios tracking code
-    auto.typewrite(tracking_code)
+        auto.typewrite(tracking_code)
 
-    # 4. Search by tracking code
-    auto.press("enter")
-    time.sleep(0.25)
+        auto.press("enter")
 
-    # 5. Wait load
-    time.sleep(3)
+        auto.hotkey("ctrl", "a")
+        auto.press("backspace")
 
-    auto.hotkey("ctrl", "a")
-    time.sleep(0.25)
-    auto.press("backspace")
+    def check_search_result():
+        bad_search = True
 
-
-
-    # 6. Copy User email addres
-    result = get_images_coordinates(
-        [
-            ("screenshots/bling_email_field.png", 0.8),
-            ("screenshots/bling_telefone_field.png", 0.8)
-        ]
-    )
-    print(result)
-    email_coordinates = result['bling_email_field']
-    phone_field_coordinates = result['bling_telefone_field']
-
-    copy_text_content(
-        delay = 0.5,
-        start_positions = [
-            (
-                email_coordinates['x'],
-                email_coordinates['y']
-            ),
-            (
-                email_coordinates['x'],
-                email_coordinates['y'] + 50
+        try:
+            auto.locateOnScreen(
+                "screenshots/bling_pesquisa_nenhum_resultado.png",
+                confidence = 0.95
             )
-        ],
-        drag_positions = [
-            (
-                phone_field_coordinates['x'] - 20,
-                email_coordinates['y'] + 50
+        except ImageNotFoundException:
+            bad_search = False
+
+        try:
+            auto.locateOnScreen(
+                "screenshots/bling_remessa_cancelada.png",
+                confidence = 0.95
             )
-        ],
-        end_positions = [
-            (
-                phone_field_coordinates['x'] - 20,
-                email_coordinates['y'] + 90
-            )
-        ]
-    )
+        except ImageNotFoundException:
+            bad_search = False
+
+        return bad_search
+
+    search_customer_datas()
+
+    bad_search = check_search_result()
+
+    if not bad_search:
+
+        result = get_images_coordinates(
+            [
+                ("screenshots/bling_email_field.png", 0.8),
+                ("screenshots/bling_telefone_field.png", 0.8)
+            ]
+        )
+
+        email_coordinates = result['bling_email_field']
+        phone_field_coordinates = result['bling_telefone_field']
+
+        print("[PROGRESS] Coletando email do usuário.\n")
+        copy_text_content(
+            delay = 0.25,
+            start_positions = [
+                (
+                    email_coordinates['x'],
+                    email_coordinates['y']
+                ),
+                (
+                    email_coordinates['x'],
+                    email_coordinates['y'] + 50
+                )
+            ],
+            drag_positions = [
+                (
+                    phone_field_coordinates['x'] - 20,
+                    email_coordinates['y'] + 50
+                )
+            ],
+            end_positions = [
+                (
+                    phone_field_coordinates['x'] - 20,
+                    email_coordinates['y'] + 90
+                )
+            ]
+        )
+        return True
+
+    else: return False
 
 def copy_customer_phone_number():
-    print("Copiando o número de telefone...")
-    # 1. Access invoices manager web page
-    click_on_img("screenshots/bling_nome_aba.png")
-    time.sleep(0.5)
+    """
+    Copies the customer's phone number from the saved position.
+    """
+    print("[PROGRESS] Coletando número de telefone do usuário.\n")
 
-    # 2. Copy User phone number
+    click_on_img("screenshots/bling_nome_aba.png")
+
     copy_text_content(
         delay = 0.25,
         start_positions = [

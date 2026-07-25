@@ -1,0 +1,20 @@
+Ave Maria! Tudo bem?
+Temos uma notícia: o seu pedido NUMERO_PEDIDO está aguardando por você para retirada na agência dos Correios!
+
+Por caridade, confira as informações para poder buscá-lo:
+Dados para a Retirada:
+ENDERECO_RETIRADA
+
+Código de Rastreio: CODIGO_RASTREIO
+
+O que você precisa levar para retirar:
+
+Documento oficial com foto: É indispensável apresentar um documento de identificação original (RG, CNH, etc.) do destinatário.
+Código de rastreamento: Tenha o código acima em mãos para que os funcionários localizem o seu pacote com mais agilidade.
+
+Informação importante:
+Fique atento ao prazo de retirada dos Correios (que costuma ser de 7 dias corridos). 
+Caso o pedido não seja retirado dentro desse período, ele poderá ser devolvido para nós.
+
+Que Deus abençoe grandemente você e sua família.
+"Quem como Deus? Ninguém!"

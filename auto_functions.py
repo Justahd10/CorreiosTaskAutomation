@@ -3,7 +3,18 @@ import pyautogui as auto
 from pyautogui import ImageNotFoundException
 
 
-def click_on_img(img_file, confidence = 0.7, delay = 0):
+auto.PAUSE = 0.5
+
+
+def click_on_img(img_file, confidence = 0.7):
+    """
+    Locates an image on the screen and clicks its center.
+
+    Args:
+        img_file: Path to the image file to be located.
+        confidence: Confidence level for image matching.
+        delay: Cursor movement time to the element.
+    """
     # Try locate screenshot on browser window
     def get_screenshoot_coordinates():
         nonlocal img_file, confidence
@@ -29,14 +40,12 @@ def click_on_img(img_file, confidence = 0.7, delay = 0):
 
     result = get_screenshoot_coordinates()
 
-    # If found, click on image
+    # If found, click on image directly at the detected coordinates
     if result['found_image']:
-        auto.moveTo(
-            result['coordinates'],
-            duration = delay
+        auto.click(
+            result['coordinates'].x,
+            result['coordinates'].y
         )
-        time.sleep(0.5)
-        auto.click()
 
 
 def copy_text_content(
@@ -45,32 +54,40 @@ def copy_text_content(
     end_positions: list[tuple[int]],
     delay = 1
 ):
+    """
+    Selects text on the screen and copies it to the 
+    clipboard.
+
+    Args:
+        start_positions: Initial cursor positions to begin 
+        the selection. drag_positions: Intermediate drag 
+        positions for the selection. end_positions: Final 
+        positions to finish the selection. delay: Cursor 
+        movement time between positions.
+    """
     def move_over_positions(positions_list):
         nonlocal delay
         for position in positions_list:
             auto.moveTo(position, duration = delay)
-            time.sleep(0.5)
 
     # Prepare the mouse for start to copy text content
     move_over_positions(start_positions)
 
     auto.mouseDown(button = "left")
-    time.sleep(0.5)
 
     # Select text content to copy
     move_over_positions(drag_positions)
 
     auto.hotkey("ctrl", "c")
-    time.sleep(0.5)
 
     # Finally preapre for mouse up
     move_over_positions(end_positions)
 
     auto.mouseUp(button = "left")
-    time.sleep(0.5)
 
 
 def get_images_coordinates(files: list[tuple]):
+    """Returns the coordinates of a list of images found on the screen."""
     coordinates = {}
 
     for file in files:
@@ -99,6 +116,14 @@ def get_images_coordinates(files: list[tuple]):
 
 
 def put_trigger(trigger_type, values):
+    """
+    Monitors trigger events to control the automation flow.
+
+    Args:
+        trigger_type: Type of trigger to execute.
+        values: Data required for the trigger, such as RGB 
+        coordinates.
+    """
 
     def put_rgb_change_trigger():
         nonlocal values
@@ -124,6 +149,10 @@ def put_trigger(trigger_type, values):
 
 
 def run_keys_sequence(keybowards: list):
+    """
+    Presses a sequence of keys with a small interval between 
+    them.
+    """
     for key in keybowards:
         auto.press(key)
-        time.sleep(0.25)
+        time.sleep(0.1)

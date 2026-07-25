@@ -6,175 +6,195 @@ from auto_functions import (
 )
 
 auto.FAILSAFE = True
+auto.PAUSE = 0.5
 
 
-def send_email_message(tracking_code):
-    print("Enviando mensagem de email...")
-    # 1. Access customer service web page
+def send_email_message(msg):
+    """
+    Sends an email message through the Omni interface.
+
+    Args:
+        msg: Content of the message to be sent to the 
+        customer.
+
+    Returns:
+        True when the phone number already exists, False 
+        when a new number
+        needs to be registered.
+    """
+    print("[PROGRESS] Enviando mensagem de email ao usuário.\n")
+
     click_on_img(
         "screenshots/omni_nome_aba.png"
     )
-    time.sleep(0.5)
 
     click_on_img(
         "screenshots/omni_botao_enviar_mensagem.png"
     )
-    time.sleep(0.5)
 
-    auto.typewrite("diognasde06@gmail.com")
-    time.sleep(1.5)
+    auto.write("diognasde06@gmail.com")
     auto.press("enter")
-    time.sleep(0.5)
 
     click_on_img(
         "screenshots/omni_opcao_email_contato_hesed.png"
     )
-    time.sleep(0.5)
 
-    auto.typewrite("Pedido aguardando retirada")
-    time.sleep(0.5)
+    auto.write("Pedido aguardando retirada")
 
     click_on_img(
         "screenshots/omni_texto_escrever_mensagem.png"
     )
-    time.sleep(0.5)
 
-    auto.typewrite(f"Mensagem de teste {tracking_code}")
-    time.sleep(0.5)
+    auto.write(msg)
 
     click_on_img(
         "screenshots/omni_botao_enviar.png",
         confidence = 0.8
     )
-    time.sleep(1)
 
     click_on_img(
         "screenshots/omni_link_vizualizar.png",
         confidence = 0.8
     )
-    time.sleep(0.5)
 
+    #
     click_on_img(
-        "screenshots/omni_botao_macro.png"
+        "screenshots/omni_botao_macro.png",
+        confidence = 0.95
     )
-    time.sleep(0.5)
+    click_on_img(
+        "screenshots/omni_botao_abrir_conversa.png",
+        confidence = 0.95
+    )
+    auto.click()
+    auto.click(1350, auto.position()[1])
 
     print("Mensagem de email enviada!")
 
     try:
         auto.locateOnScreen(
             "screenshots/omni_numero_indisponivel.png",
-            confidence = 0.9
+            confidence = 0.95
         )
-        time.sleep(0.5)
     except ImageNotFoundException:
-        print("Não encontrado número de telefone indisponível!")
+        print("[PROGRESS] Usuário já está com o telefone informado.\n")
         return True
     else:
         return False
 
 
 def past_customer_phone_number():
-    print("Editando usuário com o número de telefone...")
-    # 1. Access customer service web page
+    print("[PROGRESS] Atualizando cadastro do usuário com o telefone informado.\n")
+
     click_on_img(
         "screenshots/omni_nome_aba.png"
     )
-    time.sleep(0.5)
 
     click_on_img(
         "screenshots/botao_editar_contato.png"
     )
-    time.sleep(0.5)
 
     click_on_img(
         "screenshots/botao_editar_contato.png"
     )
-    time.sleep(0.5)
 
     click_on_img(
         "screenshots/omni_campo_adicionar_numero.png"
     )
-    time.sleep(0.5)
 
     auto.hotkey("ctrl", "v")
-    time.sleep(0.5)
 
     run_keys_sequence(
         [
             "left", "left", "left", "left", 
             "backspace", "left", "left", "left",
-            "left", "left",
-            "backspace", "backspace", "backspace",
-            "backspace", "backspace", "enter"
+            "left", "left", "backspace", "backspace", 
+            "left", "left", "backspace", "enter"
         ]
     )
-    time.sleep(0.5)
 
     print("Edição de número de telefone feita!\n")
 
 
-def send_whatsapp_message(tracking_code):
-    print("Enviando mensagem por whatsapp...")
+def send_whatsapp_message(msg):
+    """
+    Sends a WhatsApp message through the Omni workflow.
+
+    Args:
+        msg: Text of the personalized message for the 
+        customer.
+    """
+    print("[PROGRESS] Enviando mensagem por WhatsApp ao usuário.\n")
+
+    def send_msg():
+        nonlocal msg
+
+        auto.write(msg)
+        auto.hotkey("ctrl", "enter")
+
     click_on_img(
-        "screenshots/omni_botao_nova_mensagem.png"
+        "screenshots/omni_botao_nova_mensagem.png",
+        confidence = 0.8
     )
-    time.sleep(0.5)
 
     click_on_img(
         "screenshots/omni_texto_mostrar_caixas_entradas.png"
     )
-    time.sleep(0.5)
 
     click_on_img(
         "screenshots/omni_caixa_entrada_loja_hesed.png"
     )
-    time.sleep(0.5)
 
     click_on_img(
         "screenshots/omni_botao_selecionar_modelo.png"
     )
-    time.sleep(0.5)
 
     click_on_img(
         "screenshots/omni_opcao_mensagem3.png"
     )
-    time.sleep(0.5)
 
     click_on_img(
-        "screenshots/omni_botao_enviar_mensagem2.png"
+        "screenshots/omni_botao_enviar_mensagem2.png",
+        confidence = 0.9
     )
-    time.sleep(0.5)
 
     click_on_img(
-        "screenshots/omni_link_vizualizar.png"
+        "screenshots/omni_link_vizualizar.png",
+        confidence = 0.8
     )
-    time.sleep(0.5)
 
-    # Check if message has successfulfy sent
-    # if pyautogui found the reload icon
-    # he just press than to continues
+    # Check if the message was successfully sent.
+    # If pyautogui finds the reload icon, it proceeds.
     click_on_img(
-        "screenshots/omni_botao_macro.png"
+        "screenshots/omni_botao_recarregar_mensagem.png",
+        confidence = 0.85
     )
-    time.sleep(0.5)
 
-    click_on_img(
-        "screenshots/omni_botao_mensagem_privada.png"
-    )
-    time.sleep(0.5)
+    # Check whether the private-message send option is already selected.
+    try:
+        auto.locateOnScreen(
+            "screenshots/omni_botao_enviar_mensagem_privada_selecionado.png",
+            confidence = 0.95
+        )
+    except ImageNotFoundException:
+        click_on_img(
+            "screenshots/omni_botao_mensagem_privada.png",
+            confidence = 0.9
+        )
+        
+    finally:
+        click_on_img(
+            "screenshots/omni_area_texto_mensagem_privada.png",
+            confidence = 0.95
+        )
 
-    # Write message
-    auto.typewrite(f"Mensagem de teste {tracking_code}")
-    time.sleep("0.5")
-    auto.press("enter")
-    time.sleep("0.5")
+        send_msg()
 
-    # Add label to customer conversation
-    click_on_img(
-        "screenshots/omni_botao_macro.png"
-    )
-    time.sleep(0.5)
+        # Add label to customer conversation
+        click_on_img(
+            "screenshots/omni_botao_macro.png",
+            confidence = 0.95
+        )
 
     # End of the process!
     print("Processo concluído para o código de rastreio")

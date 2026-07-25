@@ -1,31 +1,29 @@
-# Access tracking code list from enviroment variable
-import os
-from dotenv import load_dotenv
-
-from flows.bling import (
-    copy_customer_email,
-    copy_customer_phone_number
-)
-from flows.omni import (
-    send_email_message,
-    send_whatsapp_message,
-    past_customer_phone_number
+from automation_flow import run_workflow
+from wonca_labs_api import (
+    get_shipping_details,
+    prepare_datas
 )
 
-load_dotenv()
+# Access orders report
+import pandas as pd
 
-tracking_codes = os.environ.get("tracking_codes").split(",")
+report_df = pd.DataFrame(pd.read_excel("correios_report.xlsx"))
+tracking_codes = report_df['CODIGO RASTREIO']
+order_numbers = report_df['PEDIDO']
 
-# Start automation, running the flows for each tracking code
-# All workflow consists of the flow for invoices management
-# and customer service platforms
 
-for code in tracking_codes:
-    copy_customer_email(code)
-    user_have_phone = send_email_message(code)
+# Main function to process the report data
+def main(report_datas):
+    for code, order in zip(
+        report_datas['CODIGO RASTREIO'],
+        report_datas['PEDIDO']
+    ):
+        details = get_shipping_details(code)
+        pickup_addr = prepare_datas(details)
 
-    if not user_have_phone:
-        copy_customer_phone_number()
-        past_customer_phone_number()
-    
-    send_whatsapp_message(code)
+        run_workflow(code, order, pickup_addr)
+
+
+# Execute the main function if the script is run directly
+if __name__ == "__main__":
+    main(report_df)
