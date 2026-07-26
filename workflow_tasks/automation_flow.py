@@ -1,9 +1,9 @@
 # Importing workflow process
-from workflow.bling import (
+from workflow_tasks.bling import (
     search_customer_datas, copy_customer_email, 
     check_search_result, copy_customer_phone_number
 )
-from workflow.omni import (
+from workflow_tasks.omni import (
     send_email_message, send_whatsapp_message,
     past_customer_phone_number, check_phone_number
 )

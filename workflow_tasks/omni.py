@@ -1,6 +1,6 @@
 import keyboard, time, pyautogui as auto, pathlib
 from pyautogui import ImageNotFoundException
-from workflow.auto_functions import (
+from workflow_tasks.auto_functions import (
     click_on_img, run_keys_sequence,
     click_on_imgs_sequence
 )

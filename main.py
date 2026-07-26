@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from workflow.automation_flow import run_workflow
+from workflow_tasks.automation_flow import run_workflow
 
 from worksheet.wonca_labs_api import (
     get_shipping_details, prepare_datas
