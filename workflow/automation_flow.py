@@ -1,10 +1,11 @@
 # Importing workflow process
 from workflow.bling import (
-    copy_customer_email, copy_customer_phone_number
+    search_customer_datas, copy_customer_email, 
+    check_search_result, copy_customer_phone_number
 )
 from workflow.omni import (
     send_email_message, send_whatsapp_message,
-    past_customer_phone_number
+    past_customer_phone_number, check_phone_number
 )
 
 # Set the FailSafeException
@@ -46,7 +47,7 @@ def run_workflow(order, code, address, msg_template):
     """
     Run the customer workflow for a Correios order.
 
-    This function builds a personalized message from the 
+    Builds a personalized message from the 
     provided template, searches for customer data in Bling 
     by tracking code, and then sends the appropriate email 
     and WhatsApp notifications.
@@ -63,21 +64,33 @@ def run_workflow(order, code, address, msg_template):
 
     msg = make_msg_template(order, code, address, msg_template)
 
-    if copy_customer_email(code):
-        print("[PROGRESS] Email do usuário coletado.\n")
+    search_customer_datas(code)
 
-        # After send email message, check for phone number
-        # If not exists, get the data from invoices web site
-        if not send_email_message(msg):
-            print("[PROGRESS] Verificando telefone do usuário.\n")
-            copy_customer_phone_number()
+    fails_search = check_search_result()
 
-            print("[PROGRESS] Número de telefone coletado.\n")
-            past_customer_phone_number()
-        else:
-            print("[PROGRESS] Usuário contém telefone.\n")
+    if not fails_search:
+        copy_customer_email()
 
-        print("[PROGRESS] Enviando mensagem de WhatsApp.\n")
-        send_whatsapp_message(msg)
+        success = send_email_message(msg)
+        
+        if success:
+            has_phone_number = check_phone_number()
 
-        print("[PROGRESS] Mensagem por WhatsApp enviada.\n")
+            if not has_phone_number:
+                print("Verificando telefone do usuário.\n")
+                copy_customer_phone_number()
+
+                print("Número de telefone coletado.\n")
+                phone_exists = past_customer_phone_number()
+
+                if not phone_exists:
+                    print("Enviando mensagem de WhatsApp.\n")
+                    send_whatsapp_message(msg)
+            else:
+                print("Usuário contém telefone.\n")
+
+                print("Enviando mensagem de WhatsApp.\n")
+
+                send_whatsapp_message(msg)
+
+                print("Mensagem por WhatsApp enviada.\n")

@@ -6,7 +6,7 @@ from workflow.auto_functions import (
 )
 
 auto.FAILSAFE = True
-auto.PAUSE = 1
+auto.PAUSE = 0.5
 
 # Access relative path  fot images folder
 imgs_path = (pathlib.Path.cwd() / "screenshots").as_posix()
@@ -25,7 +25,7 @@ def send_email_message(msg):
         True when the phone number already exists, False 
         when a new number needs to be registered.
     """
-    print("[PROGRESS] Enviando mensagem de email ao usuário.\n")
+    print("Enviando mensagem de email ao usuário.\n")
 
     click_on_imgs_sequence(
         [
@@ -40,10 +40,16 @@ def send_email_message(msg):
     auto.press("enter")
     time.sleep(1)
 
-    click_on_img(
+    found_img = click_on_img(
         imgs_path + "/omni_opcao_email_contato_hesed.png"
     )
     time.sleep(1)
+
+    if not found_img:
+        click_on_img(
+            imgs_path + "/omni_botao_enviar_mensagem.png"
+        )
+        return False
 
     keyboard.write("Pedido aguardando retirada")
     time.sleep(1)
@@ -71,20 +77,23 @@ def send_email_message(msg):
 
     print("Mensagem de email enviada!")
 
+    return True
+
+def check_phone_number():
     try:
         auto.locateOnScreen(
             imgs_path + "/omni_numero_indisponivel.png",
             confidence = 0.95
         )
     except ImageNotFoundException:
-        print("[PROGRESS] Usuário já está com o telefone informado.\n")
+        print(" Usuário já está com o telefone informado.\n")
         return True
     else:
         return False
 
 
 def past_customer_phone_number():
-    print("[PROGRESS] Atualizando cadastro do usuário com o telefone informado.\n")
+    print(" Atualizando telefone do usuário.\n")
 
     click_on_imgs_sequence(
         [
@@ -105,7 +114,19 @@ def past_customer_phone_number():
         ]
     )
 
-    print("Edição de número de telefone feita!\n")
+    # If an image indicates the phone number already exists, move left and click
+    existing_img = imgs_path + "/omni_numero_existente.png"
+    try:
+        found = auto.locateOnScreen(existing_img, confidence=0.8)
+    except ImageNotFoundException:
+        print("Edição de número de telefone feita!\n")
+        return False
+    else:
+        # move to the left side (x) of the found image and click
+        auto.click(1253, 802)
+        print("Número já existe — clique realizado à esquerda.\n")
+
+        return True
 
 
 def send_whatsapp_message(msg):
@@ -116,7 +137,7 @@ def send_whatsapp_message(msg):
         msg: Text of the personalized message for the 
         customer.
     """
-    print("[PROGRESS] Enviando mensagem por WhatsApp ao usuário.\n")
+    print("Enviando mensagem por WhatsApp ao usuário.\n")
 
     def send_msg():
         nonlocal msg
@@ -125,6 +146,7 @@ def send_whatsapp_message(msg):
         time.sleep(5)
         auto.hotkey("ctrl", "enter")
 
+    time.sleep(1)
     click_on_imgs_sequence(
         [
             (imgs_path + "/omni_botao_nova_mensagem.png", 0.8),

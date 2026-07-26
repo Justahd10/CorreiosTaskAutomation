@@ -47,6 +47,10 @@ def click_on_img(img_file, confidence = 0.7):
             result['coordinates'].y
         )
 
+        return True
+
+    return False
+
 
 def click_on_imgs_sequence(images_files: list[tuple], interval = 1):
     """
@@ -120,11 +124,11 @@ def get_images_coordinates(files: list[tuple]):
     return coordinates
 
 
-def run_keys_sequence(keybowards: list):
+def run_keys_sequence(keybowards: list, interval = 0):
     """
     Presses a sequence of keys with a small interval between 
     them.
     """
     for key in keybowards:
         auto.press(key)
-        time.sleep(0.1)
+        time.sleep(interval)
