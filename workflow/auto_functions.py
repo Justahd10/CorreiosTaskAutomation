@@ -48,6 +48,15 @@ def click_on_img(img_file, confidence = 0.7):
         )
 
 
+def click_on_imgs_sequence(images_files: list[tuple], interval = 1):
+    """
+    Click on a sequence of images with a specified interval
+    """
+    for item in images_files:
+        click_on_img(item[0], item[1])
+        time.sleep(interval)
+
+
 def copy_text_content(
     start_positions: list[tuple[int]],
     drag_positions: list[tuple[int]], 
@@ -113,39 +122,6 @@ def get_images_coordinates(files: list[tuple]):
             }
 
     return coordinates
-
-
-def put_trigger(trigger_type, values):
-    """
-    Monitors trigger events to control the automation flow.
-
-    Args:
-        trigger_type: Type of trigger to execute.
-        values: Data required for the trigger, such as RGB 
-        coordinates.
-    """
-
-    def put_rgb_change_trigger():
-        nonlocal values
-        trigger_value =\
-            auto.pixel(values[0], values[1])
-
-        print("Procurando por mudança RGB...")
-
-        while auto.pixel(
-            values[0], values[1]
-        ) == trigger_value:
-            trigger_value = auto.pixel(
-                values[0], values[1]
-            )
-            time.sleep(0.25)
-
-        print("Mudança de RGB encontrada!")
-
-    # Trigger execution handling
-    match trigger_type:
-        case "rgb_change":
-            put_rgb_change_trigger()
 
 
 def run_keys_sequence(keybowards: list):

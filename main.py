@@ -1,29 +1,36 @@
-from automation_flow import run_workflow
-from wonca_labs_api import (
-    get_shipping_details,
-    prepare_datas
+from workflow.automation_flow import run_workflow
+from correios_report.wonca_labs_api import (
+    get_shipping_details, prepare_datas
+)
+from correios_report.orders_report import (
+    get_report_datas, report_worksheet, file_path
 )
 
-# Access orders report
-import pandas as pd
 
-report_df = pd.DataFrame(pd.read_excel("correios_report.xlsx"))
-tracking_codes = report_df['CODIGO RASTREIO']
-order_numbers = report_df['PEDIDO']
+datas = get_report_datas()
 
 
 # Main function to process the report data
-def main(report_datas):
-    for code, order in zip(
-        report_datas['CODIGO RASTREIO'],
-        report_datas['PEDIDO']
-    ):
-        details = get_shipping_details(code)
+def main():
+
+    for idx, values in enumerate(zip(
+        datas['tracking_codes'],
+        datas['orders_numbers']
+    ), start = 1):
+        details = get_shipping_details(values[0])
         pickup_addr = prepare_datas(details)
 
-        run_workflow(code, order, pickup_addr)
+        run_workflow(values[1], values[0], pickup_addr)
+
+        # Edit report worksheet
+        report_worksheet.active.delete_rows(idx)
+        report_worksheet.save(file_path)
+
 
 
 # Execute the main function if the script is run directly
 if __name__ == "__main__":
-    main(report_df)
+    try:
+        main()
+    except Exception as e:
+        print("Exeção de execução caputarada:", e)

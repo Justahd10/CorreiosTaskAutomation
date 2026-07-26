@@ -57,12 +57,16 @@ def prepare_datas(datas):
     print("[PROGRESS] Preparando os dados de rastreamento para montar o endereço...")
 
     events = datas['eventos']
-    awaiting_pickup = "Objeto aguardando retirada no endereço indicado"
+    awaiting_pickup_status = [
+        "Objeto aguardando retirada no endereço indicado",
+        "Objeto encaminhado para retirada no endereço indicado",
+        "Objeto aguardando retirada na Caixa Postal"
+    ]
 
     address_template = pickup_address
 
     for event in events:
-        if event['descricao'] == awaiting_pickup:
+        if event['descricao'] in awaiting_pickup_status:
             addr_data = event['unidade']['endereco']
 
             print("[PROGRESS] Evento de retirada encontrado. Montando endereço...")
@@ -78,6 +82,6 @@ def prepare_datas(datas):
             ).replace(
                 "state", addr_data['uf']
             )
-
+            print(f"\n{address_template}\n")
             print("[PROGRESS] Endereço montado com sucesso.")
             return address_template

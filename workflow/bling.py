@@ -1,15 +1,18 @@
-import time
-import pyautogui as auto
+import pyautogui as auto, keyboard, pathlib
 from pyautogui import ImageNotFoundException
 
-auto.PAUSE = 0.5
-
-from auto_functions import (
+from workflow.auto_functions import (
     click_on_img, copy_text_content,
-    get_images_coordinates
+    get_images_coordinates, click_on_imgs_sequence
 )
 
+auto.PAUSE = 0.5
 phone_field_coordinates = None
+
+# Access relative path  fot images folder
+imgs_path = (pathlib.Path.cwd() / "screenshots").as_posix()
+
+
 
 def copy_customer_email(tracking_code):
     """Searches for the customer in Bling and copies the contact data.
@@ -26,11 +29,15 @@ def copy_customer_email(tracking_code):
     def search_customer_datas():
         nonlocal tracking_code
 
-        click_on_img("screenshots/bling_nome_aba.png")
+        click_on_imgs_sequence(
+            [
+                (imgs_path + "/bling_nome_aba.png", 0.99),
+                (imgs_path + "/bling_campo_codigo_rastreio.png", 0.99)
+            ],
+            interval = 0
+        )
 
-        click_on_img("screenshots/bling_campo_codigo_rastreio.png")
-
-        auto.typewrite(tracking_code)
+        keyboard.write(tracking_code)
 
         auto.press("enter")
 
@@ -38,36 +45,42 @@ def copy_customer_email(tracking_code):
         auto.press("backspace")
 
     def check_search_result():
-        bad_search = True
+        fail_search = False
 
         try:
             auto.locateOnScreen(
-                "screenshots/bling_pesquisa_nenhum_resultado.png",
+                imgs_path + "/bling_pesquisa_nenhum_resultado.png",
                 confidence = 0.95
             )
         except ImageNotFoundException:
-            bad_search = False
+            pass
+        else:
+            print("Nenhum resultado de pesquisa no bling.")
+            fail_search = True
 
         try:
             auto.locateOnScreen(
-                "screenshots/bling_remessa_cancelada.png",
+                imgs_path + "/bling_remessa_cancelada.png",
                 confidence = 0.95
             )
         except ImageNotFoundException:
-            bad_search = False
+            pass
+        else:
+            print("Status cancelado na pesquisa no bling.")
+            fail_search = True
 
-        return bad_search
+        return fail_search
 
     search_customer_datas()
 
-    bad_search = check_search_result()
+    fail_search = check_search_result()
 
-    if not bad_search:
+    if not fail_search:
 
         result = get_images_coordinates(
             [
-                ("screenshots/bling_email_field.png", 0.8),
-                ("screenshots/bling_telefone_field.png", 0.8)
+                (imgs_path + "/bling_email_field.png", 0.8),
+                (imgs_path + "/bling_telefone_field.png", 0.8)
             ]
         )
 
@@ -110,7 +123,7 @@ def copy_customer_phone_number():
     """
     print("[PROGRESS] Coletando número de telefone do usuário.\n")
 
-    click_on_img("screenshots/bling_nome_aba.png")
+    click_on_img(imgs_path + "/bling_nome_aba.png")
 
     copy_text_content(
         delay = 0.25,

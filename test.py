@@ -1,10 +1,10 @@
-import time
+import time, pandas
 import pyautogui as auto
 from pyautogui import ImageNotFoundException
 
-while True:
+""" while True:
     time.sleep(1)
-    print(auto.position())
+    print(auto.position()) """
 
 """ time.sleep(2)
 img_coordinates = auto.locateOnScreen("screenshots/bling_telefone_field.png", confidence = 0.8)
@@ -29,3 +29,14 @@ while True:
         break
     finally:
         time.sleep(0.25) """
+
+import pathlib, openpyxl
+
+report_file = openpyxl.load_workbook(
+    (pathlib.Path().cwd() / "correios_report" / "correios_report.xlsx").as_posix()
+)
+
+
+
+for idx, values in enumerate(zip(["Diogo", "Ana"], [19, 20])):
+    print("Indice:", idx, "Valores:", values) 

@@ -1,9 +1,9 @@
 # Importing workflow process
-from flows.bling import (
+from workflow.bling import (
     copy_customer_email,
     copy_customer_phone_number
 )
-from flows.omni import (
+from workflow.omni import (
     send_email_message,
     send_whatsapp_message,
     past_customer_phone_number
@@ -37,10 +37,10 @@ def make_msg_template(
         A ready-to-send message with the data inserted.
     """
     msg_template = message_template
-
+    
     msg_template = (
         msg_template.replace(
-            "NUMERO_PEDIDO", order_number or ""
+            "NUMERO_PEDIDO", str(order_number) or ""
         )
     ).replace(
         "CODIGO_RASTREIO", tracking_code
