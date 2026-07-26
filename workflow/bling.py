@@ -6,7 +6,7 @@ from workflow.auto_functions import (
     get_images_coordinates, click_on_imgs_sequence
 )
 
-auto.PAUSE = 0.5
+auto.PAUSE = 1
 phone_field_coordinates = None
 
 # Access relative path  fot images folder
@@ -80,7 +80,7 @@ def copy_customer_email(tracking_code):
         result = get_images_coordinates(
             [
                 (imgs_path + "/bling_email_field.png", 0.8),
-                (imgs_path + "/bling_telefone_field.png", 0.8)
+                (imgs_path + "/bling_telefone_field.png", 0.85)
             ]
         )
         
@@ -91,7 +91,7 @@ def copy_customer_email(tracking_code):
             imgs_path + "/bling_telefone_field.png"
         ]
 
-        print("[PROGRESS] Coletando email do usuário.\n")
+        print("[PROGRESS] Coletando email do usuário.\n\n")
         copy_text_content(
             delay = 0.25,
             start_positions = [
@@ -117,6 +117,9 @@ def copy_customer_email(tracking_code):
                 )
             ]
         )
+
+        auto.click() # <- reset the current selection on the page
+
         return True
 
     else: return False

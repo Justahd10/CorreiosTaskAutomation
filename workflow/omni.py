@@ -88,7 +88,7 @@ def past_customer_phone_number():
     click_on_imgs_sequence(
         [
             (imgs_path + "/omni_nome_aba.png", 0.99),
-            (imgs_path + "/botao_editar_contato.png", 0.99),
+            (imgs_path + "/botao_editar_contato.png", 0.95),
             (imgs_path + "/omni_campo_adicionar_numero.png", 0.99)
         ]
     )

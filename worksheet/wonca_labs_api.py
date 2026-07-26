@@ -33,7 +33,7 @@ def get_shipping_details(tracking_code: str, api_key):
 
     url = "https://api-labs.wonca.com.br/wonca.labs.v1.LabsService/Track"
 
-    print(f"Consultando rastreamento. Código: {tracking_code}...")
+    print(f"Consultando rastreamento. Código: {tracking_code}...\n")
 
     req_payload = {
         "code": tracking_code,
@@ -48,7 +48,7 @@ def get_shipping_details(tracking_code: str, api_key):
         json=req_payload,
     )
 
-    print("[PROGRESS] Resposta da API recebida.")
+    print("[PROGRESS] Resposta da API recebida.\n")
     return json.loads(response.json()['json'])
 
 
@@ -56,7 +56,7 @@ def prepare_datas(datas):
     """
     Prepares the shipping details data for further processing.
     """
-    print("Preparando os dados de rastreamento...")
+    print("Preparando os dados de rastreamento...\n")
 
     events = datas['eventos']
     address_template = pickup_address
@@ -65,7 +65,7 @@ def prepare_datas(datas):
         if event['descricao'] in awaiting_pickup_status:
             addr_data = event['unidade']['endereco']
 
-            print("Montando endereço de retirada...")
+            print("Montando endereço de retirada...\n")
 
             address_template = address_template.replace(
                 "street", addr_data['logradouro']

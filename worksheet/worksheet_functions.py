@@ -12,7 +12,17 @@ def get_credentials_file():
             return item.name
 
 
-def get_worksheet(name):
+def get_worksheet(workspace: str, grid: int):
+    """
+    Open a Google Sheets worksheet.
+
+    Args:
+        workspace: Title of the Google Sheets workbook.
+        grid: The worksheet ID within the workbook.
+
+    Returns:
+        A gspread Worksheet object for the selected sheet.
+    """
     creds_f = get_credentials_file()
 
     # Set the access permissions for integration services
@@ -33,11 +43,9 @@ def get_worksheet(name):
     client = gspread.authorize(creds)
 
     # Access workspace
-    workspace = client.open(title = name)
+    spreadsheet = client.open(title = workspace)
 
     # Access worksheet
-    worksheet = workspace.get_worksheet_by_id(
-        id = 10171118
-    )
+    worksheet = spreadsheet.get_worksheet_by_id(grid)
 
     return worksheet
