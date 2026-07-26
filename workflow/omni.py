@@ -31,11 +31,12 @@ def send_email_message(msg):
         [
             (imgs_path + "/omni_nome_aba.png", 0.99),
             (imgs_path + "/omni_botao_enviar_mensagem.png", 0.99)
-        ]
+        ],interval = 0.1
     )
-
+    
     auto.hotkey("ctrl", "v")
-    time.sleep(3)
+    time.sleep(5)
+    auto.press("tab")
     auto.press("enter")
     time.sleep(1)
 
