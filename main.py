@@ -1,8 +1,12 @@
-import pathlib, os
+import os
 from dotenv import load_dotenv
 from workflow.automation_flow import run_workflow
-from correios_report.wonca_labs_api import (
+
+from worksheet.wonca_labs_api import (
     get_shipping_details, prepare_datas
+)
+from worksheet.worksheet_functions import (
+    get_worksheet
 )
 
 
@@ -16,55 +20,43 @@ with open("message.txt", "r", encoding = "utf-8") as f:
     message_template = f.read()
 
 
-# Main function to process the Correios orders report
 def main():
-    with open(
-        (
-            pathlib.Path.cwd()/"correios_report"/"correios_report.csv"
-        ).as_posix(),
-        "r+", encoding="utf-8"
-    ) as report_file:
-        rows = report_file.readlines()
+    """
+    Main function to process the Correios orders report
+    """
+    worksheet = get_worksheet("desenvolvimento automação")
+    rows = worksheet.get_all_records()
 
-        # Prepare CSV columns mapping
-        def get_col_idx(name):
-            return rows[0].replace("\n", "").split(",").index(name)
+    try:
+        # Start work operations for each row
+        for row_number, row in enumerate(rows, start = 2):
+            control_cell = worksheet.cell(row_number, 4)
 
-        orders_col = get_col_idx("PEDIDO")
-        code_col = get_col_idx("CODIGO RASTREIO")
+            if control_cell.value == "MENSAGEM ENVIADA":
+                continue
 
-        try:
-            # Start work operations for each row
-            for idx, row in enumerate(rows[1:], start = 1):
-                row = row.replace("\n", "").split(",")
-
-                details =\
-                    get_shipping_details(
-                        row[code_col], wonca_apk
-                    )
-                pickup_addr =\
-                    prepare_datas(details)
-
-                run_workflow(
-                    row[orders_col],
-                    row[code_col],
-                    pickup_addr,
-                    message_template          
+            details =\
+                get_shipping_details(
+                    row['CODIGO RASTREIO'], wonca_apk
                 )
+            pickup_addr =\
+                prepare_datas(details)
 
-        except Exception as e:
-            print("Erro de execução capturado\n")
+            run_workflow(
+                row['PEDIDO'],
+                row['CODIGO RASTREIO'],
+                pickup_addr,
+                message_template          
+            )
 
-            print("A editar arquivo CSV...")
-            remaining_rows = [rows[0]] + rows[idx:]
-            report_file.seek(0)
-            report_file.writelines(remaining_rows)
-            report_file.truncate()
-            print("Edição concluída.")
+            worksheet.update_cell(
+                row_number, 4, "MENSAGEM ENVIADA"
+            )
 
-            raise e
+    except Exception as e:
+        print("Erro de execução capturado\n")
+        raise e
 
 
-# Execute the main function if the script is run directly
 if __name__ == "__main__":
     main()
