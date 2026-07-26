@@ -83,9 +83,13 @@ def copy_customer_email(tracking_code):
                 (imgs_path + "/bling_telefone_field.png", 0.8)
             ]
         )
-
-        email_coordinates = result['bling_email_field']
-        phone_field_coordinates = result['bling_telefone_field']
+        
+        email_coordinates = result[
+            imgs_path + "/bling_email_field.png"
+        ]
+        phone_field_coordinates = result[
+            imgs_path + "/bling_telefone_field.png"
+        ]
 
         print("[PROGRESS] Coletando email do usuário.\n")
         copy_text_content(

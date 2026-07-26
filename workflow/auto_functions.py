@@ -32,7 +32,7 @@ def click_on_img(img_file, confidence = 0.7):
             )
         except ImageNotFoundException:
             result['found_image'] = False
-            print(f"Screenshot from {img_file} not found")
+            print(f"Image não encontrada: {img_file}")
 
             return result
 
@@ -104,14 +104,10 @@ def get_images_coordinates(files: list[tuple]):
             coordinate = auto.locateOnScreen(
                 image = file[0], confidence = file[1]
             )
-            coordinates[
-                (
-                    file[0].replace("screenshots/", "")
-                ).replace(".png", "")
-            ] = {
-                "x": int(coordinate.left),
-                "y": int(coordinate.top)
-            }
+            coordinates[file[0]] = {
+                    "x": int(coordinate.left),
+                    "y": int(coordinate.top)
+                }
         except ImageNotFoundException:
             coordinates[
                 (

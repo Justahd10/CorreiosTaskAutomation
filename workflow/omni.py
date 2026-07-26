@@ -34,7 +34,7 @@ def send_email_message(msg):
         ]
     )
 
-    keyboard.write("ahd5digos@gmail.com")
+    auto.hotkey("ctrl", "v")
     time.sleep(3)
     auto.press("enter")
     time.sleep(1)
@@ -175,4 +175,3 @@ def send_whatsapp_message(msg):
         time.sleep(1)
 
     # End of the process!
-    print("Processo concluído para o código de rastreio")

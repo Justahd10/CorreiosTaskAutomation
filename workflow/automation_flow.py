@@ -1,11 +1,9 @@
 # Importing workflow process
 from workflow.bling import (
-    copy_customer_email,
-    copy_customer_phone_number
+    copy_customer_email, copy_customer_phone_number
 )
 from workflow.omni import (
-    send_email_message,
-    send_whatsapp_message,
+    send_email_message, send_whatsapp_message,
     past_customer_phone_number
 )
 
@@ -14,14 +12,9 @@ import pyautogui as auto
 auto.FAILSAFE = True
 
 
-# Prepare message template
-message_template = ""
-with open("message.txt", "r", encoding = "utf-8") as f:
-    message_template = f.read()
-
-
 def make_msg_template(
-    order_number: str, tracking_code: str, pickup_addres: str
+    order_number: str, tracking_code: str, pickup_addres: str,
+    message: str,
 ):
     """
     Replaces the template placeholders with the order 
@@ -30,36 +23,46 @@ def make_msg_template(
     Args:
         order_number: Order number to be shared with the 
         customer. tracking_code: Tracking code associated with 
-        the order.msg_template: Base text containing the 
+        the order.
+        msg_template: Base text containing the 
         replacement markers.
 
     Returns:
         A ready-to-send message with the data inserted.
     """
-    msg_template = message_template
     
-    msg_template = (
-        msg_template.replace(
+    message = (
+        message.replace(
             "NUMERO_PEDIDO", str(order_number) or ""
         )
     ).replace(
         "CODIGO_RASTREIO", tracking_code
     ).replace("ENDERECO_RETIRADA", pickup_addres)
 
-    return msg_template
+    return message
 
 
-# Start automation, running the flows for each tracking code
-# All workflow consists of the flow for invoices management
-# and customer service platforms
+def run_workflow(order, code, address, msg_template):
+    """
+    Run the customer workflow for a Correios order.
 
-def run_workflow(order, code, address):
-    msg = make_msg_template(order, code, address)
+    This function builds a personalized message from the 
+    provided template, searches for customer data in Bling 
+    by tracking code, and then sends the appropriate email 
+    and WhatsApp notifications.
 
-    print(f"Trabalhando no pedido {order}, código de rastreio {code}...")
+    Args:
+        order: Order number to use in the message text.
+        code: Tracking code used to locate the customer record.
+        address: Pickup address to insert into the message.
+        msg_template: Template string containing placeholders.
 
-    # Search customer datas using Correios tracking code
-    # If no results, and send email message
+    Returns:
+        None
+    """
+
+    msg = make_msg_template(order, code, address, msg_template)
+
     if copy_customer_email(code):
         print("[PROGRESS] Email do usuário coletado.\n")
 
