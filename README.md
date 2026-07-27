@@ -6,7 +6,7 @@ Automation of repetitive and sequential tasks in a customer service work.
 
 # Functionalitys
 1. Browser automation: keyboard, mouse, and image search
-2. Consulta e atualização da planilha do Google Sheets
+2. Access and edit spredsheet from Google Sheets
 3. Tracking information lookup via API
 
 # Prerequisites
