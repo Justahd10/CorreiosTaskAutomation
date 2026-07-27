@@ -100,7 +100,9 @@ def copy_text_content(
 
 
 def get_images_coordinates(files: list[tuple]):
-    """Returns the coordinates of a list of images found on the screen."""
+    """
+    Returns the coordinates of a list of images found on the screen.
+    """
     coordinates = {}
 
     for file in files:

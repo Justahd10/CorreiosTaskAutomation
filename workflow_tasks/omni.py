@@ -158,6 +158,7 @@ def send_whatsapp_message(msg):
             (imgs_path + "/omni_link_vizualizar.png", 0.8)
         ]
     )
+    time.sleep(2)
 
     # Check if the message was successfully sent.
     # If pyautogui finds the reload icon, it proceeds.

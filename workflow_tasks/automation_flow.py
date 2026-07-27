@@ -14,8 +14,8 @@ auto.FAILSAFE = True
 
 
 def make_msg_template(
-    order_number: str, tracking_code: str, pickup_addres: str,
-    message: str,
+    order_number: str, tracking_code: str, 
+    pickup_addres: str, message: str,
 ):
     """
     Replaces the template placeholders with the order 
@@ -73,7 +73,7 @@ def run_workflow(order, code, address, msg_template):
 
         success = send_email_message(msg)
         
-        if success:
+        if success: 
             has_phone_number = check_phone_number()
 
             if not has_phone_number:
@@ -88,7 +88,6 @@ def run_workflow(order, code, address, msg_template):
                     send_whatsapp_message(msg)
             else:
                 print("Usuário contém telefone.\n")
-
                 print("Enviando mensagem de WhatsApp.\n")
 
                 send_whatsapp_message(msg)
